@@ -25,16 +25,20 @@ public class AmazonDatasetParse extends DatasetParse {
 		try {
 			//解析社区信息数据
 			List<String> rawCommunityData = FileUtils.readFileByLine(new File(getFileAbsolutePath(cmtyPath)));
+			int[] sizeOfComm = new int[rawCommunityData.size()]; 		//记录每个社区的节点数量
 			int commId = 0;
 			int nId = 0;
 			for(String line : rawCommunityData){
-				if(line.startsWith("#")){
-					continue;
-				}
 				String[] nodeIds = line.trim().split("\t");
 				for(String nodeId:nodeIds){
-					if(nodeToId.keySet().contains(nodeId)){
-						
+					if(nodeToId.keySet().contains(nodeId)){		//对于重叠节点，分配给节点数少的社区
+						for(Node node:nodeSet){
+							if(nodeId.equals(node.getName()) && sizeOfComm[Integer.valueOf(node.getRealLabel())] > sizeOfComm[commId]){
+									node.setCommId(commId);
+									sizeOfComm[commId]++;
+									sizeOfComm[Integer.valueOf(node.getRealLabel())]--;
+							}
+						}
 						continue;
 					}else{
 						Node node = new Node();
@@ -43,6 +47,7 @@ public class AmazonDatasetParse extends DatasetParse {
 						node.setName(nodeId);
 						nodeSet.add(node);
 						nodeToId.put(nodeId, nId++);
+						sizeOfComm[commId]++;
 					}
 				}
 				labels.add(commId+"");
@@ -52,9 +57,6 @@ public class AmazonDatasetParse extends DatasetParse {
 			//解析无向图数据
 			List<String> rawUngraphData = FileUtils.readFileByLine(new File(getFileAbsolutePath(ungraphPath)));
 			for(String line : rawUngraphData){
-				if(line.startsWith("#")){
-					continue;
-				}
 				String[] nodeIds = line.trim().split("\t");
 				if(nodeToId.get(nodeIds[0]) == null || nodeToId.get(nodeIds[1]) == null){
 					System.out.println("数据不正确："+line);
@@ -64,6 +66,10 @@ public class AmazonDatasetParse extends DatasetParse {
 				edge.setSourceId(nodeToId.get(nodeIds[0]));
 				edge.setDestinationId(nodeToId.get(nodeIds[1]));
 				edgeSet.add(edge);
+			}
+			
+			for(int i=0;i<sizeOfComm.length;i++){
+				System.out.println(i+" , "+sizeOfComm[i]);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

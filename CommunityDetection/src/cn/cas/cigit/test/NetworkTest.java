@@ -60,7 +60,7 @@ public class NetworkTest {
 		Network nw = ss.getNetWork();
 		double[][] arr = nw.getAdjacencyMat().getArray();
 //		ArrayUtil.checkMatrixIsSymmetric(arr);
-		double nmi = nw.communityDetection(0.001, 10);
+//		double nmi = nw.communityDetection(0.001, 10);
 		long end = System.currentTimeMillis();
 		System.out.println("计算结束，总耗时："+(end-start)/1000);
 	}

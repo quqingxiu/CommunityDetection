@@ -4,7 +4,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import Jama.Matrix;
 
-public class ParallelMatrixMultiply {
+public class ParallelMatrixComputer {
 	private ForkJoinPool pool;
 
 	public Matrix executeMultiply(Matrix oneMat,Matrix anotherMat){
@@ -19,10 +19,10 @@ public class ParallelMatrixMultiply {
 	}
 	
 	public static void main(String[] args) {
-		Matrix oneMat = new Matrix(8000,8000,0.5);
+		Matrix oneMat = new Matrix(3000,8000,0.5);
 		Matrix anotherMat = new Matrix(8000,800,0.671);
 		long start = System.currentTimeMillis();
-		ParallelMatrixMultiply multi = new ParallelMatrixMultiply();
+		ParallelMatrixComputer multi = new ParallelMatrixComputer();
 		Matrix mm = multi.executeMultiply(oneMat, anotherMat);
 		long end = System.currentTimeMillis();
 		System.out.println("并行计算耗时："+(end-start));

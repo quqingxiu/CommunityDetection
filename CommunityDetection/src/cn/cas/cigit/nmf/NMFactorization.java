@@ -1,6 +1,8 @@
 package cn.cas.cigit.nmf;
 
+
 import Jama.Matrix;
+import cn.cas.cigit.parallel.ParallelMatrixComputer;
 
 /**
  * 非负矩阵分解类
@@ -12,6 +14,10 @@ public class NMFactorization {
 	 * 避免矩阵相除时，分母出现0。对被除矩阵中值为NaN和0的元素，重新赋值为gama
 	 */
 	private static double gama = 1e-5;
+	/**
+	 * 矩阵并行运算实例
+	 */
+	private static ParallelMatrixComputer parallel = new ParallelMatrixComputer();
 	
 	/**
 	 * 矩阵分解更新规则3，乘法更新规则
@@ -135,8 +141,11 @@ public class NMFactorization {
 		int row = A.getRowDimension();
 		int col = X.getColumnDimension();
 		Matrix res = new Matrix(row,col,1-beta);
-		Matrix axMat = A.times(X);
-		Matrix xxxMat = X.times(X.transpose()).times(X).times(beta);
+//		Matrix axMat = A.times(X);
+//		Matrix xxxMat = X.times(X.transpose()).times(X).times(beta);
+		Matrix axMat = parallel.executeMultiply(A, X);
+		Matrix xxtMat = parallel.executeMultiply(X, X.transpose());
+		Matrix xxxMat = parallel.executeMultiply(xxtMat, X).times(beta);
 		reviseMatrix(xxxMat);			//修正矩阵中的元素
 		res.plusEquals(axMat.arrayRightDivide(xxxMat));
 		res.arrayTimesEquals(X);

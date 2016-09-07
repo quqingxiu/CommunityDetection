@@ -183,12 +183,12 @@ public class Network {
 			}
 			CommsOfNetwork.put(i, comm);
 		}
-		//根据添加和删除链接策略修改网络的拓扑结构
 		
+		//根据添加和删除链接策略修改网络的拓扑结构
 		List<Edge> edgeList = sortInterLinkByEntropy(entropys);
 		for(int n=0; n<perSelectedSize && n<edgeList.size(); n++){
 			Edge edge = edgeList.get(n);
-			System.out.println("选择的边的熵："+edge.getEntropy());
+//			System.out.println("选择的边的熵："+edge.getEntropy());
 			Node maxEntrNodeOne = nodeSet.get(edge.getSourceId());
 			Node maxEntrNodeAnother = nodeSet.get(edge.getDestinationId());
 			//根据背景信息，判断两个熵最大点是否属于同一社区。如果不属于同一社区，则断掉连接，否则保留
@@ -196,9 +196,6 @@ public class Network {
 //			recordHumanLabeling(edge);
 			if(!isIdentical){
 				modifyAdjacencyMatrix(edge.getSourceId(), edge.getDestinationId(), 0,maxLinkSize);
-//				
-//				adjacencyMat.set(edge.getSourceId(), edge.getDestinationId(), 0);
-//				adjacencyMat.set(edge.getDestinationId(), edge.getSourceId(), 0);
 			}
 			
 			connetionStrategy(maxEntrNodeOne, maxEntrNodeAnother, isIdentical,maxLinkSize);

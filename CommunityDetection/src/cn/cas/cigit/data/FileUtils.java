@@ -143,5 +143,19 @@ public class FileUtils {
 			
 		}
 	}
+	
+	/**
+	 * 获取文件的绝对路径
+	 * @param relativePath 相对路径
+	 * @return
+	 */
+	public static String getFileAbsolutePath(String relativePath){
+		String rootPath = System.getProperty("user.dir");
+		if(!relativePath.startsWith("/")){
+			return rootPath+File.separator+relativePath;
+		}else{
+			return rootPath+relativePath;
+		}
+	}
  
 }

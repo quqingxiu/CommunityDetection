@@ -1,6 +1,8 @@
 package cn.cas.cigit.data;
 
-public class ArrayUtil {
+import java.util.Set;
+
+public class CollectionUtil {
 	public static void showArr(double[][] a){
 		for(int i=0;i<a.length;i++){
 			for(int j=0;j<a[i].length;j++){
@@ -84,6 +86,21 @@ public class ArrayUtil {
 		for(Double d:arr){
 			res += d+" ";
 		}
+		return res;
+	}
+	
+	/**
+	 * 数组转换为字符
+	 * @param arr
+	 * @return
+	 */
+	public static String toString(Set<String> arr){
+		String res = "(";
+		for(String d:arr){
+			res += d+",";
+		}
+		res.substring(0, res.length()-1);
+		res += ")";
 		return res;
 	}
 	

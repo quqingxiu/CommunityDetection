@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.cas.cigit.data.CollectionUtil;
 import cn.cas.cigit.data.FileUtils;
 import cn.cas.cigit.model.Edge;
 import cn.cas.cigit.model.Node;
@@ -34,12 +35,11 @@ public class AmazonDatasetParse extends DatasetParse {
 					if(nodeToId.keySet().contains(nodeId)){		//对于重叠节点，分配给节点数少的社区
 						for(Node node:nodeSet){
 							if(nodeId.equals(node.getName()) && sizeOfComm[Integer.valueOf(node.getRealLabel())] > sizeOfComm[commId]){
-									node.setCommId(commId);
+									node.setRealLabel(commId+"");
 									sizeOfComm[commId]++;
 									sizeOfComm[Integer.valueOf(node.getRealLabel())]--;
 							}
 						}
-						continue;
 					}else{
 						Node node = new Node();
 						node.setRealLabel(commId+"");
@@ -53,6 +53,8 @@ public class AmazonDatasetParse extends DatasetParse {
 				labels.add(commId+"");
 				commId++;
 			}
+			
+			System.out.println();
 			
 			//解析无向图数据
 			List<String> rawUngraphData = FileUtils.readFileByLine(new File(getFileAbsolutePath(ungraphPath)));
@@ -68,9 +70,10 @@ public class AmazonDatasetParse extends DatasetParse {
 				edgeSet.add(edge);
 			}
 			
-			for(int i=0;i<sizeOfComm.length;i++){
-				System.out.println(i+" , "+sizeOfComm[i]);
-			}
+//			for(int i=0;i<sizeOfComm.length;i++){
+//				System.out.println(i+" , "+sizeOfComm[i]);
+//			}
+//			System.out.println(CollectionUtil.toString(labels));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -3,7 +3,7 @@ package cn.cas.cigit.test;
 import org.junit.Test;
 
 import Jama.Matrix;
-import cn.cas.cigit.data.ArrayUtil;
+import cn.cas.cigit.data.CollectionUtil;
 import cn.cas.cigit.data.DataSource;
 import cn.cas.cigit.model.Network;
 import cn.cas.cigit.nmf.NMFactorization;
@@ -35,7 +35,7 @@ public class NetworkTest {
 			nmis[time] = nmi;
 			time++;
 		}
-		System.out.println("当加入"+rate+"%背景信息时，选取不同初始值，执行10次后的NMI值为："+ArrayUtil.getMinAndMax(nmis));
+		System.out.println("当加入"+rate+"%背景信息时，选取不同初始值，执行10次后的NMI值为："+CollectionUtil.getMinAndMax(nmis));
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class NetworkTest {
 			nmis[time] = nmi;
 			time++;
 		}
-		System.out.println("当加入"+rate+"%背景信息时，选取不同初始值，执行10次后的NMI值为："+ArrayUtil.getMinAndMax(nmis));
+		System.out.println("当加入"+rate+"%背景信息时，选取不同初始值，执行10次后的NMI值为："+CollectionUtil.getMinAndMax(nmis));
 	}
 	
 	@Test
@@ -58,9 +58,9 @@ public class NetworkTest {
 		long start = System.currentTimeMillis();
 		DataSource ss = new DataSource(new AmazonDatasetParse());
 		Network nw = ss.getNetWork();
-		double[][] arr = nw.getAdjacencyMat().getArray();
+//		double[][s] arr = nw.getAdjacencyMat().getArray();
 //		ArrayUtil.checkMatrixIsSymmetric(arr);
-//		double nmi = nw.communityDetection(0.001, 10);
+		double nmi = nw.communityDetection(0.001, 10,100,1e-5);
 		long end = System.currentTimeMillis();
 		System.out.println("计算结束，总耗时："+(end-start)/1000);
 	}

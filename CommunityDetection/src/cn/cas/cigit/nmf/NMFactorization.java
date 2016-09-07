@@ -96,9 +96,9 @@ public class NMFactorization {
 		int num = 0;
 		double preErr = 0.0;
 		while(times < iterTimes){
-			Matrix expectedMat = X.times(X.transpose());
+			Matrix expectedMat = parallel.executeMultiply(X, X.transpose());
 			double err = sourceMat.minus(expectedMat).normF();
-//			System.out.println("Îó²î£º"+err);
+			System.out.println("µÚ"+(times)+"´ÎÎó²î£º"+err);
 			if(Math.abs(err-preErr) < e){
 				num++;
 			}

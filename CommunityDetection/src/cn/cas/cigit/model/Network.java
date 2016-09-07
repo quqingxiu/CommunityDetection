@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import Jama.Matrix;
-import cn.cas.cigit.data.ArrayUtil;
+import cn.cas.cigit.data.CollectionUtil;
 import cn.cas.cigit.nmf.NMFactorization;
 
 /**
@@ -68,7 +68,19 @@ public class Network {
 	 * @throws Exception
 	 */
 	public double communityDetection(double usedPercent,int selectedSize) throws Exception{
-		System.out.println("开始执行社区检测算法.........");
+		return communityDetection(usedPercent,selectedSize,3000,1e-8);
+	}
+	
+	/**
+	 * 社区检测
+	 * @param usedPercent 使用人为标识连接的百分比
+	 * @param selectedSize 每次迭代修改的连接数
+	 * @param maxIter 最大迭代次数
+	 * @param maxError 最大误差
+	 * @throws Exception
+	 */
+	public double communityDetection(double usedPercent,int selectedSize,int maxIter,double maxError) throws Exception{
+		System.out.println("\n开始执行社区检测算法.........");
 		int iterNoChangeNum = 0;	//没有结点改变所属社区的连续迭代次数
 		int times = 0;
 		this.SELECTED_SIZE = selectedSize;
@@ -77,8 +89,8 @@ public class Network {
 		
 		double nmi = 0;
 		while(times < 100){
-			System.out.println("\n第"+(times+1)+"次迭代：");
-			X = NMFactorization.executeNMF(adjacencyMat,K, 3000,1e-8,X);
+			System.out.println("第"+(times+1)+"次迭代：");
+			X = NMFactorization.executeNMF(adjacencyMat,K, maxIter,maxError,X);
 			boolean modifyFlag = getConmunityOfNode(X.getArray());
 			nmi = calculateNMI();		//计算执行结果的标准互信息值
 			if(modifyFlag){
@@ -117,7 +129,7 @@ public class Network {
 				entropy -= pro*Math.log(pro);
 			}
 			if(Double.isNaN(entropy)){
-				System.out.println("出现NaN, "+ArrayUtil.toString(arr[i])+", sum: "+rowSum[i]);
+				System.out.println("出现NaN, "+CollectionUtil.toString(arr[i])+", sum: "+rowSum[i]);
 			}
 			entropys[i] = entropy;
 		}
@@ -493,6 +505,8 @@ public class Network {
 				}
 			}
 		}
+		
+		
 		return modifyFlag;
 	}
 	

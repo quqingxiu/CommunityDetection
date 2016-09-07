@@ -12,14 +12,6 @@ import cn.cas.cigit.parse.GMLDatasetParse;
 
 public class NetworkTest {
 	public static void main(String[] args) throws Exception {
-		double[] arr = new double[]{1,4,3,8};
-		Name n = new Name(arr);
-		n.change(9);
-		n.show();
-		for(int i=0;i<arr.length;i++){
-			System.out.print(arr[i]+" ");
-		}
-
 	}
 	
 	@Test

@@ -18,6 +18,10 @@ public class NMFactorization {
 	 * 矩阵并行运算实例
 	 */
 	private static ParallelMatrixComputer parallel = new ParallelMatrixComputer();
+	/**
+	 * 迭代是否结束标示
+	 */
+	private static boolean finished = false;
 	
 	/**
 	 * 矩阵分解更新规则3，乘法更新规则
@@ -88,7 +92,8 @@ public class NMFactorization {
 	 * @param sourceMat 源矩阵
 	 * @param iterTimes	 最大迭代次数
 	 * @param e			 误差上限
-	 * @return
+	 * @param iterFlag	 迭代是否完成
+	 * @return	
 	 * @throws Exception 
 	 */
 	public static Matrix executeNMF(Matrix sourceMat,int K, int iterTimes,double e,Matrix X) throws Exception{
@@ -111,10 +116,19 @@ public class NMFactorization {
 //			X = updateMatrixRule_multiplicative(sourceMat, X);
 			times++;
 		}
+		if(num <= 5){
+			finished = true;
+		}else{
+			finished = false;
+		}
 		System.out.println("迭代次数times="+times);
 		return X;
 	}
 	
+	public static boolean isFinished() {
+		return finished;
+	}
+
 	/**
 	 * 非负矩阵分解更新规则1,beta系数为0.5
 	 * @param A 邻接矩阵

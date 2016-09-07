@@ -54,8 +54,6 @@ public class AmazonDatasetParse extends DatasetParse {
 				commId++;
 			}
 			
-			System.out.println();
-			
 			//解析无向图数据
 			List<String> rawUngraphData = FileUtils.readFileByLine(new File(getFileAbsolutePath(ungraphPath)));
 			for(String line : rawUngraphData){

@@ -80,20 +80,21 @@ public class Network {
 	 * @throws Exception
 	 */
 	public double communityDetection(double usedPercent,int selectedSize,int maxIter,double maxError) throws Exception{
-		System.out.println("\n开始执行社区检测算法.........");
 		int iterNoChangeNum = 0;	//没有结点改变所属社区的连续迭代次数
+		int totalLinkSize = (int)(usedPercent*0.5*0.01*nodeSet.size()*(nodeSet.size()-1));
 		int times = 0;
 		this.SELECTED_SIZE = selectedSize;
 		Matrix X = Matrix.random(adjacencyMat.getRowDimension(), K);
 		X.arrayTimesEquals(new Matrix(adjacencyMat.getRowDimension(),K,0.01));
 		
+		System.out.println("\n开始执行社区检测算法,链接总数："+totalLinkSize);
 		double nmi = 0;
 		while(times < 100){
 			System.out.println("第"+(times+1)+"次迭代：");
 			X = NMFactorization.executeNMF(adjacencyMat,K, maxIter,maxError,X);
 			boolean modifyFlag = getConmunityOfNode(X.getArray());
 			nmi = calculateNMI();		//计算执行结果的标准互信息值
-			if(modifyFlag){
+			if(modifyFlag && !NMFactorization.isFinished()){
 				iterNoChangeNum = 0;
 			}else{
 				iterNoChangeNum ++;
@@ -102,7 +103,7 @@ public class Network {
 				break;
 			}
 			double[] entropys = calcEntropyOfNode(X.getArray());
-			modifyNetworkByConnectionStrategy(entropys,(int)(usedPercent*0.01*nodeSet.size()*(nodeSet.size()-1)));
+			modifyNetworkByConnectionStrategy(entropys,totalLinkSize);
 			times++;
 		}
 		return nmi;

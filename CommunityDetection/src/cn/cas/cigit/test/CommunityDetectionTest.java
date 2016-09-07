@@ -23,16 +23,28 @@ public class CommunityDetectionTest {
 	private NMFactorization nmf;
 	private DataSource ss ;
 	
+	public static void main(String[] args) {
+		double[][] arr = {{2,1},{2,2}};
+		Matrix mat = new Matrix(arr);
+		mat.print(1, 0);
+		double[][] arr2 = mat.getArrayCopy();
+		arr2[0][1] = 90;
+		mat.print(1, 0);
+	}
+	
 	@Test
 	public void testPolblogsDataset() throws Exception{
 		long start = System.currentTimeMillis();
-		double[] betaArr = {0.25,0.5,0.75,1.0};
 		ss = new DataSource(new GMLDatasetParse("data/polblogs/polblogs.gml"));
+		File file = new File(FileUtils.getFileAbsolutePath("/data/result/polblogs.txt"));
+		FileUtils.writeFileByBytes("#ruleName coeff rate totalTimes res",file, false);
+		
 		//开始测试beta更新规则
+		double[] betaArr = {0.25,0.5,0.75,1.0};
 		iteraTest("polblogs",betaArr,"beta",0.01,0.001,0.001,3,1000,1e-5);
 		
 		//开始测试alpha更新规则
-		double[] alphaArr = {1,2,3,4,5,6};
+		double[] alphaArr = {2,3,4,5,6,7};
 		iteraTest("polblogs",alphaArr,"alpha",0.01,0.001,0.001,3,1000,1e-5);
 		long end = System.currentTimeMillis();
 		System.out.println("计算结束，总耗时："+(end-start)/1000+"秒");
@@ -47,10 +59,10 @@ public class CommunityDetectionTest {
 			}else if("alpha".equals(ruleName)){
 				nmf = new NMFactorization(new AlphaUpdateRule(coeff));
 			}
-			int time = 0;
 			for(double rate=startRate;rate<maxRate;rate+=deltaRate){		//加入不同比率的背景信息
-				System.out.println("\n开始"+ruleName+"更新算法，系数："+coeff+",rate:"+rate);
+				System.out.println("\n开始"+ruleName+"更新算法，系数："+coeff+",rate:"+String .format("%.3f",rate));
 				double[] nmis = new double[totalTimes];
+				int time = 0;
 				while(time < totalTimes){
 					double nmi = communityDetection(rate,selectedSize,maxIter,maxError);
 					nmis[time] = nmi;
@@ -58,8 +70,8 @@ public class CommunityDetectionTest {
 				}
 				String res = CollectionUtil.getMinAndMax(nmis);
 				File file = new File(FileUtils.getFileAbsolutePath("/data/result/"+datasetName+".txt"));
-				FileUtils.writeFileByBytes("ruleName="+ruleName+",coeff="+coeff+",rate="+rate+"totalTimes="+totalTimes+","+res,file, true);
-				System.out.println("使用"+ruleName+"更新规则,"+ruleName+"系数为："+coeff+",当加入"+rate+"%背景信息时,执行"+totalTimes+"次后的NMI值为："+res);
+				FileUtils.writeFileByBytes("\n"+ruleName+" "+coeff+" "+ String .format("%.3f",rate)+" "+totalTimes+" "+res,file, true);
+				System.out.println("使用"+ruleName+"更新规则,"+ruleName+"系数为："+coeff+",当加入"+String .format("%.3f",rate)+"%背景信息时,执行"+totalTimes+"次后的NMI值为："+res);
 			}
 		}
 	}

@@ -9,6 +9,9 @@ import java.util.concurrent.RecursiveAction;
  */
 public class MultiplyTask extends RecursiveAction {
 	private static final long serialVersionUID = 1L;
+	/**
+	 * æÿ’Û«–∑÷µƒ„–÷µ
+	 */
 	private static final int THRESOLD = 100;
 	
 	private double[][] leftMat;

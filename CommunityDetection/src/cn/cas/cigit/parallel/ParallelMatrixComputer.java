@@ -4,17 +4,28 @@ import java.util.concurrent.ForkJoinPool;
 
 import Jama.Matrix;
 
+/**
+ * 矩阵并行计算类
+ * @author qqx
+ *
+ */
 public class ParallelMatrixComputer {
 	private ForkJoinPool pool;
 
-	public Matrix executeMultiply(Matrix oneMat,Matrix anotherMat){
+	/**
+	 * 执行矩阵乘法
+	 * @param leftMat 左矩阵
+	 * @param rightMat 右矩阵
+	 * @return
+	 */
+	public Matrix executeMultiply(Matrix leftMat,Matrix rightMat){
 		int processors = Runtime.getRuntime().availableProcessors();
 		pool = new ForkJoinPool(processors);
-		int rowDim = oneMat.getRowDimension();
-		int colDim = anotherMat.getColumnDimension();
+		int rowDim = leftMat.getRowDimension();
+		int colDim = rightMat.getColumnDimension();
 		double[][] resArr = new double[rowDim][colDim];
 		//对第二个矩阵做一次转置，使得相乘时列寻址变为行寻址
-		pool.invoke(new MultiplyTask(oneMat.getArray(), anotherMat.transpose().getArray(),resArr, 0,rowDim-1,0,colDim-1));
+		pool.invoke(new MultiplyTask(leftMat.getArray(), rightMat.transpose().getArray(),resArr, 0,rowDim-1,0,colDim-1));
 		return Matrix.constructWithCopy(resArr);
 	}
 	

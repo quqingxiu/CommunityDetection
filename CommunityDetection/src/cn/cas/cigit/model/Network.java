@@ -61,53 +61,6 @@ public class Network {
 	public static void main(String[] args) {
 	}
 	
-	/**
-	 * 社区检测
-	 * @param usedPercent 使用人为标识连接的百分比
-	 * @param selectedSize 每次迭代修改的连接数
-	 * @throws Exception
-	 */
-	public double communityDetection(double usedPercent,int selectedSize) throws Exception{
-		return communityDetection(usedPercent,selectedSize,3000,1e-8);
-	}
-	
-	/**
-	 * 社区检测
-	 * @param usedPercent 使用人为标识连接的百分比
-	 * @param selectedSize 每次迭代修改的连接数
-	 * @param maxIter 最大迭代次数
-	 * @param maxError 最大误差
-	 * @throws Exception
-	 */
-	public double communityDetection(double usedPercent,int selectedSize,int maxIter,double maxError) throws Exception{
-		int iterNoChangeNum = 0;	//没有结点改变所属社区的连续迭代次数
-		int totalLinkSize = (int)(usedPercent*0.5*0.01*nodeSet.size()*(nodeSet.size()-1));
-		int times = 0;
-		this.SELECTED_SIZE = selectedSize;
-		Matrix X = Matrix.random(adjacencyMat.getRowDimension(), K);
-		X.arrayTimesEquals(new Matrix(adjacencyMat.getRowDimension(),K,0.01));
-		
-		System.out.println("\n开始执行社区检测算法,链接总数："+totalLinkSize);
-		double nmi = 0;
-		while(times < 100){
-			System.out.println("第"+(times+1)+"次迭代：");
-			X = NMFactorization.executeNMF(adjacencyMat,K, maxIter,maxError,X);
-			boolean modifyFlag = getConmunityOfNode(X.getArray());
-			nmi = calculateNMI();		//计算执行结果的标准互信息值
-			if(modifyFlag && !NMFactorization.isFinished()){
-				iterNoChangeNum = 0;
-			}else{
-				iterNoChangeNum ++;
-			}
-			if(iterNoChangeNum >= 5){	//连续5次迭代没有结点改变所属社区，则结束分解
-				break;
-			}
-			double[] entropys = calcEntropyOfNode(X.getArray());
-			modifyNetworkByConnectionStrategy(entropys,totalLinkSize);
-			times++;
-		}
-		return nmi;
-	}
 	
 	/**
 	 * 计算节点的熵
@@ -213,7 +166,7 @@ public class Network {
 	 * 根据添加、删除链接策略修改网络拓扑结构
 	 * @param Entropys
 	 */
-	public void modifyNetworkByConnectionStrategy(double[] entropys,int maxLinkSize){
+	public void modifyNetworkByConnectionStrategy(double[] entropys,int maxLinkSize,int perSelectedSize){
 		//找出每个社区中熵最大和最小点
 		for(int i:CommsOfNetwork.keySet()){
 			Community comm = CommsOfNetwork.get(i);
@@ -233,7 +186,7 @@ public class Network {
 		//根据添加和删除链接策略修改网络的拓扑结构
 		
 		List<Edge> edgeList = sortInterLinkByEntropy(entropys);
-		for(int n=0; n<SELECTED_SIZE && n<edgeList.size(); n++){
+		for(int n=0; n<perSelectedSize && n<edgeList.size(); n++){
 			Edge edge = edgeList.get(n);
 			System.out.println("选择的边的熵："+edge.getEntropy());
 			Node maxEntrNodeOne = nodeSet.get(edge.getSourceId());
@@ -583,6 +536,10 @@ public class Network {
 		this.adjacencyMat = adjacencyMat;
 	}
 	
+	public int getCommunitySize() {
+		return K;
+	}
+
 	public void showDetectionResult(boolean isNode){
 		if(isNode){
 			for(int commId:CommsOfNetwork.keySet()){

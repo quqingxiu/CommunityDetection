@@ -37,7 +37,9 @@ public class NMFactorization {
 		while(times < iterTimes){
 			Matrix expectedMat = rule.getExpectedMatrix(X);
 			double err = sourceMat.minus(expectedMat).normF();
-//			System.out.println("第"+(times)+"次误差："+err);
+			if(times%50 == 0){
+				System.out.println("第"+(times)+"次误差："+err);
+			}
 			if(Math.abs(err-preErr) < e){
 				num++;
 			}

@@ -9,6 +9,7 @@ import cn.cas.cigit.data.CollectionUtil;
 import cn.cas.cigit.data.DataSource;
 import cn.cas.cigit.data.FileUtils;
 import cn.cas.cigit.model.Network;
+import cn.cas.cigit.model.Node;
 import cn.cas.cigit.nmf.AlphaUpdateRule;
 import cn.cas.cigit.nmf.BetaUpdateRule;
 import cn.cas.cigit.nmf.NMFactorization;
@@ -33,6 +34,66 @@ public class CommunityDetectionTest {
 	}
 	
 	@Test
+	public void testPolblogs_single() throws Exception{
+		ss = new DataSource(new GMLDatasetParse("data/polblogs/polblogs.gml"));
+		nmf = new NMFactorization(new AlphaUpdateRule(0.99));
+		double imn = communityDetection(0.01,3,1000,1e-5);
+	}
+	
+	@Test
+	public void testNormalMutualInf(){
+		int K = 2,nodeSize = 1490;
+		int[][] nij = {{613,77},{100,700}};
+		int[] groundTruth = {732,758};
+		int[] results = new int[K];
+		int trueDetectSize = 0;		//划分正确的顶点数
+		//统计结果信息
+		int total = 0;
+		for(int i=0;i<K;i++){
+			trueDetectSize += nij[i][i];
+			int sum = 0;
+			for(int j=0;j<K;j++){
+				sum += nij[j][i];
+			}
+			results[i] = sum;
+			total += sum;
+		}
+		if(total != nodeSize){
+			System.out.println("数据错误！");
+			return;
+		}
+		
+		System.out.println("正确划分的顶点数为："+trueDetectSize+" , "+CollectionUtil.toString(results));
+		
+		//计算标准互信息
+		double nmi = 0;
+		double topPart = 0.0;
+		double buttomLeftPart = 0.0;
+		double buttomRightPart = 0.0;
+		for(int i=0;i<K;i++){
+			for(int j=0;j<K;j++){
+				if(groundTruth[i]*results[j]*nij[i][j] == 0){
+					continue;
+				}
+				double temp = (double)(nodeSize*nij[i][j])/(groundTruth[i]*results[j]);
+				topPart +=nij[i][j]*Math.log(temp);
+			}
+			if(groundTruth[i]!=0){
+				buttomLeftPart += groundTruth[i]*Math.log((double)groundTruth[i]/nodeSize);
+			}
+			if(results[i]!=0){
+				buttomRightPart += results[i]*Math.log((double)results[i]/nodeSize);
+			}
+		}
+		if(buttomLeftPart*buttomRightPart == 0){
+			System.out.println("结果的标准互信息值为："+0);
+		}else{
+			nmi = topPart/Math.sqrt(buttomLeftPart*buttomRightPart);
+			System.out.println("结果的标准互信息值为："+nmi);
+		}
+	}
+	
+	@Test
 	public void testPolblogsDataset() throws Exception{
 		long start = System.currentTimeMillis();
 		ss = new DataSource(new GMLDatasetParse("data/polblogs/polblogs.gml"));
@@ -40,12 +101,12 @@ public class CommunityDetectionTest {
 		FileUtils.writeFileByBytes("#ruleName coeff rate totalTimes res",file, false);
 		
 		//开始测试beta更新规则
-		double[] betaArr = {0.25,0.5,0.75,1.0};
-		iteraTest("polblogs",betaArr,"beta",0.01,0.001,0.001,3,1000,1e-5);
+		double[] betaArr = {0.3,0.5,0.75,0.9,0.99};
+		iteraTest("polblogs",betaArr,"beta",0.1,0.01,0.015,3,1000,1e-5);
 		
 		//开始测试alpha更新规则
-		double[] alphaArr = {2,3,4,5,6,7};
-		iteraTest("polblogs",alphaArr,"alpha",0.01,0.001,0.001,3,1000,1e-5);
+		double[] alphaArr = {(double)1/2,(double)1/3,(double)1/4,(double)1/1.5,(double)1/1.1,0.99};
+		iteraTest("polblogs",alphaArr,"alpha",0.1,0.01,0.015,3,1000,1e-5);
 		long end = System.currentTimeMillis();
 		System.out.println("计算结束，总耗时："+(end-start)/1000+"秒");
 		
@@ -59,7 +120,7 @@ public class CommunityDetectionTest {
 			}else if("alpha".equals(ruleName)){
 				nmf = new NMFactorization(new AlphaUpdateRule(coeff));
 			}
-			for(double rate=startRate;rate<maxRate;rate+=deltaRate){		//加入不同比率的背景信息
+			for(double rate=startRate;rate<=maxRate;rate+=deltaRate){		//加入不同比率的背景信息
 				System.out.println("\n开始"+ruleName+"更新算法，系数："+coeff+",rate:"+String .format("%.3f",rate));
 				double[] nmis = new double[totalTimes];
 				int time = 0;

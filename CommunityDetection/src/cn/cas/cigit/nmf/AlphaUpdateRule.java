@@ -9,9 +9,9 @@ import Jama.Matrix;
  */
 public class AlphaUpdateRule extends UpdateRule {
 	/**
-	 * alpha系数，默认为1
+	 * alpha系数，默认为2
 	 */
-	private double alpha = 1;
+	private double alpha = 2;
 	
 	public AlphaUpdateRule(double alpha){
 		super();
@@ -27,7 +27,7 @@ public class AlphaUpdateRule extends UpdateRule {
 		Matrix xxxMat = parallel.executeMultiply(xxtMat, X);
 		reviseMatrix(xxxMat);
 		Matrix temp = axMat.arrayRightDivide(xxxMat);
-		temp = parallel.powerMatrix(temp, (double)1/alpha);
+		temp = parallel.powerMatrix(temp, alpha);
 //		for(int i=0;i<temp.getRowDimension();i++){
 //			for(int j=0;j<temp.getColumnDimension();j++){
 //				if(alpha == 2){

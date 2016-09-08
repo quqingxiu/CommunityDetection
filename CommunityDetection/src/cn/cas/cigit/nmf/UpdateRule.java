@@ -48,10 +48,10 @@ public abstract class UpdateRule {
 	public void reviseMatrix(Matrix mat){
 		for(int i=0;i<mat.getRowDimension();i++){
 			for(int j=0;j<mat.getColumnDimension();j++){
-				if(Double.isNaN(mat.get(i,j)) || mat.get(i,j) == 0){
-					mat.set(i,j,gama);
-				}else if(mat.get(i, j) < 1e-30){
-					mat.set(i, j,1e-30);
+				if(Double.isNaN(mat.get(i,j))){
+					mat.set(i,j,1e-100);
+				}else if(mat.get(i, j) < 1e-100){
+					mat.set(i, j,1e-100);
 				}
 			}
 		}

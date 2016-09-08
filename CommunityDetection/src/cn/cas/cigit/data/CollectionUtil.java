@@ -82,10 +82,27 @@ public class CollectionUtil {
 	 * @return
 	 */
 	public static String toString(double[] arr){
-		String res = "";
+		String res = "[";
 		for(Double d:arr){
-			res += d+" ";
+			res += d+",";
 		}
+		res = res.substring(0, res.length()-1);
+		res += "]";
+		return res;
+	}
+	
+	/**
+	 * 数组转换为字符
+	 * @param arr
+	 * @return
+	 */
+	public static String toString(int[] arr){
+		String res = "[";
+		for(int d:arr){
+			res += d+",";
+		}
+		res = res.substring(0, res.length()-1);
+		res += "]";
 		return res;
 	}
 	

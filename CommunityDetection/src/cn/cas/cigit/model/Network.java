@@ -472,10 +472,10 @@ public class Network {
 		int trueDetectSize = 0;		//划分正确的顶点数
 		//统计结果信息
 		for(Node node:nodeSet.values()){
-			int tCommId = getCommIdByLabel(node.getRealLabel());
+			int rCommId = getCommIdByLabel(node.getRealLabel());
 			int dCommId = getCommIdByLabel(node.getDetectLabel());
-			nij[tCommId][dCommId]++;
-			groundTruth[tCommId]++;
+			nij[rCommId][dCommId]++;
+			groundTruth[rCommId]++;
 			results[dCommId]++;
 			if(node.detectIsTrue()){
 				trueDetectSize++;
